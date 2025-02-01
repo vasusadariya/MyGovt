@@ -169,7 +169,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className={`w-full bg-purple-500 border-2 text-white py-2 px-3 text-sm font-bold border-3 border-black rounded-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
+            className={`w-full  border-2 text-black bg-blue-400 py-2 px-3 text-sm font-bold border-3 border-black rounded-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
               isAuthenticating
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50"

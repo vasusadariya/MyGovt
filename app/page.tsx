@@ -92,7 +92,7 @@ export default function LandingPage() {
           </motion.p>
           <Link href="/signup" className="flex justify-center items-center">
                   <button
-                    className="px-4 py-2 flex justify-center items-center rounded-lg border-2 border-[#000000] bg-[#ae7aff]
+                    className="px-4 py-2 flex justify-center items-center rounded-lg border-2 border-[#000000] bg-white
                     text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
                     dark:shadow-[3px_3px_0px_0px_#4ade80] dark:hover:shadow-[1px_1px_0px_0px_#4ade80]
                     hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
