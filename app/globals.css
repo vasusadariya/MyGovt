@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply dark mode instantly to prevent flicker */
+html.dark {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  html.light {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  /* Prevent flash of incorrect theme */
+  html {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
