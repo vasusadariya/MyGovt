@@ -103,18 +103,7 @@ export function Navbar() {
             <span className="dark:text-white">HackOps</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-sm font-medium text-foreground hover:text-purple-500 dark:text-white hover:dark:text-green-400"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+          
           {/* User Authentication Section */}
           <div className="flex items-center gap-4">
             {loading ? (
@@ -176,7 +165,7 @@ export function Navbar() {
                 {/* Login and Sign-Up Buttons */}
                 <Link href="/login">
                   <button
-                    className="px-4 py-2 hidden md:flex rounded-lg border-2 border-[#000000] bg-[#ff1fbc]
+                    className="px-4 py-2 hidden md:flex rounded-lg border-2 border-[#000000] 
                     text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
                     dark:shadow-[3px_3px_0px_0px_#4ade80] dark:hover:shadow-[1px_1px_0px_0px_#4ade80]
                     hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
@@ -186,7 +175,7 @@ export function Navbar() {
                 </Link>
                 <Link href="/signup">
                   <button
-                    className="px-4 py-2 hidden md:flex rounded-lg border-2 border-[#000000] bg-[#ae7aff]
+                    className="px-4 py-2 hidden md:flex rounded-lg border-2 border-[#000000] 
                     text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
                     dark:shadow-[3px_3px_0px_0px_#4ade80] dark:hover:shadow-[1px_1px_0px_0px_#4ade80]
                     hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
