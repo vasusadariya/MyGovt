@@ -38,7 +38,7 @@ const features = [
 
 const testimonials = [
   {
-    name: "John Doe",
+    name: "ohn Doe",
     role: "Investor",
     quote: "This platform has revolutionized the way I manage my investments.",
   },
@@ -107,47 +107,16 @@ export default function LandingPage() {
         {/* Features Section */}
         <section className="py-20 px-4 md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
-            Our Key Features
+            Govt. Schemes
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature) => (
-              <ProductCard key={feature.title} {...feature} />
-            ))}
+            
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 px-4 md:px-8 bg-blue-600 text-white">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Finances?</h2>
-            <p className="text-xl mb-8">
-              Join thousands of satisfied users and take control of your financial future today.
-            </p>
-            <div className="flex justify-center">
-              <button className="px-6 py-2 md:flex flex items-center justify-center gap-2 rounded-lg border-2 border-[#000000] bg-[#c2df44]
-                      text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
-                      dark:shadow-[3px_3px_0px_0px_#4ade80] dark:hover:shadow-[1px_1px_0px_0px_#4ade80]
-                      hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                onClick={() => {
-                  router.push("/signup")
-                }}>
-                Start Your Journey <ArrowRight className="ml-2" />
-              </button>
-            </div>
-          </div>
-        </section>
+        
 
-        {/* Testimonial Section */}
-        <section className="py-20 px-4 md:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
-            What Our Users Say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {testimonials.map((testimonial) => (
-              <ProductCard title={testimonial.name} description={""} icon={Wallet} href={"#"} key={testimonial.name} {...testimonial} />
-            ))}
-          </div>
-        </section>
+       
         <Footer />
       </div>
        </LoadingWrapper>

@@ -21,6 +21,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, loading] = useAuthState(auth);
   const [role, setRole] = useState<string | null>(null);
+  const [dashboardLink, setDashboardLink] = useState("/dashboard/users/");
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -56,25 +57,35 @@ export function Navbar() {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (user) {
-        const userRef = doc(db, 'users', user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
-          setRole(userDoc.data().role);
+          const role = userDoc.data().role;
+          setRole(role);
+          switch (role) {
+            case "Admin":
+              setDashboardLink("/dashboard/admin/");
+              break;
+            case "candidate":
+              setDashboardLink("/dashboard/candidate/");
+              break;
+            default:
+              setDashboardLink("/dashboard/users/");
+          }
+        } else {
+          setRole(null);
+          setDashboardLink("/dashboard/users/");
         }
       }
     };
 
     if (user) {
       fetchUserRole();
+    } else {
+      setRole(null); // Reset role when user logs out
+      setDashboardLink("/dashboard/users/");
     }
   }, [user]);
-
-  let dashboardLink = '/dashboard/users/'; // Default to user dashboard
-  if (role === 'Admin') {
-    dashboardLink = '/dashboard/admin/';
-  } else if (role === 'Candidate') {
-    dashboardLink = '/dashboard/candidate/';
-  }
 
   return (
     <nav
