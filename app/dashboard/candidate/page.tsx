@@ -1,10 +1,28 @@
 "use client";
 
+
+import { Navbar } from '@/components/Navbar';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import withAuth from '@/components/withAuth';
+import axios from 'axios';
+
 import { Navbar } from "@/components/Navbar";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import withAuth from "@/components/withAuth";
 import axios from "axios";
 import { X, UserPlus } from "lucide-react";
+
+
+interface Candidate {
+  _id: string;
+  name: string;
+  gender: string;
+  age: number;
+  promises: string;
+  party: string;
+  votingId: number;
+  votes: number;
+}
 
 interface FormData {
   name: string;
@@ -17,6 +35,7 @@ interface FormData {
 
 function CandidateDashboard() {
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     gender: "",
@@ -26,19 +45,45 @@ function CandidateDashboard() {
     votingId: "",
   });
 
+  useEffect(() => {
+    async function fetchCandidates() {
+      try {
+        const response = await axios.get("http://localhost:8080/candidate");
+        setCandidates(response.data.candidates);
+      } catch (error) {
+        console.error("Error fetching candidates:", error);
+      }
+    }
+    fetchCandidates();
+  }, []);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+
+    setFormData({ ...formData, [name]: name === "age" || name === "votingId" ? Number(value) : value });
+
 
     if ((name === "age" || name === "votingId") && value.startsWith("0")) {
       setFormData({ ...formData, [name]: value.replace(/^0+/, "") });
     } else {
       setFormData({ ...formData, [name]: value });
     }
+
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
+
+      const response = await axios.post("http://localhost:8080/candidates", formData);
+      console.log('Form submitted successfully:', response.data);
+
+      // Refresh candidates list after submission
+      const updatedCandidates = await axios.get("http://localhost:8080/candidate");
+      setCandidates(updatedCandidates.data.candidates);
+
+      setFormData({ name: '', gender: '', age: '', promises: '', party: '', votingId: '' });
+
       const response = await axios.post("http://localhost:3000/candidate", formData);
       console.log("Form submitted successfully:", response.data);
       
@@ -50,6 +95,7 @@ function CandidateDashboard() {
         party: "",
         votingId: "",
       });
+
 
       setShowForm(false);
     } catch (error) {
@@ -177,8 +223,33 @@ function CandidateDashboard() {
           </div>
         )}
       </div>
+      <h2 className="text-2xl font-semibold mt-10">List of Candidates</h2>
+      <table className="w-full border border-gray-300 rounded-lg shadow-md overflow-hidden">
+        <thead className="bg-blue-500 text-white">
+          <tr>
+            <th className="px-6 py-3 text-left">Sr No.</th>
+            <th className="px-6 py-3 text-left">Candidate Name</th>
+            <th className="px-6 py-3 text-left">Party</th>
+            <th className="px-6 py-3 text-left">Voting ID</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 bg-white">
+          {candidates.map((candidate, index) => (
+            <tr key={candidate._id} className="hover:bg-gray-100 transition">
+              <td className="px-6 py-4 font-semibold text-gray-700">{index + 1}</td>
+              <td className="px-6 py-4">{candidate.name}</td>
+              <td className="px-6 py-4">{candidate.party}</td>
+              <td className="px-6 py-4 text-gray-600">{candidate.votingId}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
 
+
+export default withAuth(CandidateDashboard, 'Candidate');
+
 export default withAuth(CandidateDashboard, "Candidate");
+
