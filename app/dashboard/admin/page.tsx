@@ -3,6 +3,8 @@
 import { Navbar } from "@/components/Navbar";
 import React from "react";
 import { useRouter } from 'next/navigation';
+import Link from "next/link";
+
 
 const AdminDashboard: React.FC = () => {
   const router = useRouter();
@@ -26,6 +28,15 @@ const AdminDashboard: React.FC = () => {
           className="shadow-md p-6 rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-500 cursor-pointer hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
         
           <h2 className="text-white font-bold text-center">Show Complaints</h2>
+        </div>
+
+        <div
+          className="shadow-md p-6 rounded-lg bg-gradient-to-r from-blue-400 to-blue-500 cursor-pointer hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+            <Link href="/elections">
+            <button>
+          <h2 className="text-white font-bold text-center">Monitor Elections</h2>
+            </button>
+            </Link>
         </div>
         
       </div>
