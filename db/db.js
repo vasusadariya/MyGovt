@@ -61,6 +61,19 @@ app.get("/candidate", async (req, res) => {
     }
 });
 
+app.post("/vote/:id", async (req, res) => {
+    try {
+        const candidate = await Candidate.findById(req.params.id);
+        if (!candidate) return res.status(404).json({ message: "Candidate not found" });
+
+        candidate.votes += 1; // Increase vote count
+        await candidate.save();
+
+        res.status(200).json({ message: "Vote recorded", candidate });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 // 🟢 Get a single candidate by ID
 app.get("/candidates/:id", async (req, res) => {
     try {

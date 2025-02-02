@@ -10,7 +10,6 @@ const CandidateSchema = mongoose.Schema({
     votes:Number,
 })
 
-const User = mongoose.model("User", userSchema);
 const Candidate = mongoose.model("Candidate", CandidateSchema);
 
 module.exports = Candidate;

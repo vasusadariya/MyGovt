@@ -25,7 +25,7 @@ function Election() {
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/candidates');
+      const response = await axios.get('http://localhost:8080/candidates');
       setCandidates(response.data.candidates);
     } catch (error) {
       console.error('Error fetching candidates:', error);
