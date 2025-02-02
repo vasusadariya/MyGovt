@@ -1,6 +1,9 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 function AddDocs() {
+  
+  const router = useRouter();
   return (
     <div className="max-w-sm rounded-xl overflow-hidden shadow-lg bg-white p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl relative">
       <h2 className="text-xl font-semibold mb-2">Add your Docs</h2>
@@ -8,6 +11,9 @@ function AddDocs() {
       <button
         className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 hover:bg-green-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500"
         aria-label="Add Document Button"
+        onClick={()=>{
+          router.push("/document");
+        }}
       >
         Add Docs
       </button>

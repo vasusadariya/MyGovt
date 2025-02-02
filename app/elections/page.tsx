@@ -1,9 +1,9 @@
 "use client";
 
-import withAuth from '@/components/withAuth';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PieChart from '@/components/PieChart';
+import PieChart from '@/components/Piechart';
+
 
 interface Candidate {
   _id: string;
@@ -39,8 +39,6 @@ function Election() {
 
         <PieChart/>
 
-
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {candidates.map((candidate, index) => (
           <div
@@ -49,7 +47,6 @@ function Election() {
               index === 0 ? "border-4 border-yellow-500 scale-105" : "border border-gray-300"
             } bg-white`}
           >
-            <img src={candidate.partySymbol} alt={candidate.party} className="w-16 h-16 mx-auto mb-3" />
             <h2 className="text-xl font-bold text-center">{candidate.name}</h2>
             <p className="text-gray-600 text-center">{candidate.party}</p>
             <p className="text-lg font-semibold text-center mt-2">

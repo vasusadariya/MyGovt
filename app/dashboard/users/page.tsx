@@ -62,7 +62,7 @@ function Dashboard() {
         >
           <div className="mb-8 md:mb-12 pt-20 md:pt-16">
             <h2 className="text-2xl md:text-3xl font-semibold mb-6 md:mb-8 text-gray-900 dark:text-gray-100">
-              Hello {user?.displayName ?? "User"} 👋
+              Hello {user?.displayName ?? "User"}!👋
             </h2>
           </div>
 
