@@ -18,10 +18,9 @@ function UserElections() {
 
   useEffect(() => {
     fetchCandidates();
-    const interval = setInterval(fetchCandidates, 5000); // Live updates
+    const interval = setInterval(fetchCandidates, 1000); // Live updates
     return () => clearInterval(interval);
   }, []);
-
   const fetchCandidates = async () => {
     try {
       const response = await axios.get('http://localhost:8080/candidate');

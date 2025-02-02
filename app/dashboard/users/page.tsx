@@ -67,6 +67,7 @@ function Dashboard() {
                     <VoteCard/>
 
                 </div>
+                
             </div>
         </div>
     )
