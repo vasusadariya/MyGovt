@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 
+
 const User = require('./schema');
 const Candidate = require('./schema');
 
@@ -30,17 +31,26 @@ dbconnect();
 // 🟢 Add a new candidate
 app.post("/candidates", async (req, res) => {
     try {
-        const { name, gender, age, promises, party, votingId } = req.body;
-        const newCandidate = new Candidate({ name, gender, age, promises, party, votingId, votes: 0 });
-        await newCandidate.save();
-        res.status(201).json({ message: "Candidate created successfully"    });
+      const { name, gender, age, promises, party, votingId } = req.body;
+  
+      const newCandidate = new Candidate({
+        name,
+        gender,
+        age,
+        promises,
+        party,
+        votingId,
+        votes: 0,
+      });
+  
+      await newCandidate.save();
+      res.status(201).json({ message: "Candidate created successfully" });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message }); 
+      console.log(error);
+      res.status(500).json({ error: error.message });
     }
-});
+  });
 
-// 🟢 Get all candidates sorted by votes
 app.get("/candidates", async (req, res) => {
     try {
         const candidates = await Candidate.find().sort({ votes: -1 }); // Highest votes first

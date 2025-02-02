@@ -260,13 +260,6 @@ function CandidateDashboard() {
               <td className="px-6 py-4">{candidate.name}</td>
               <td className="px-6 py-4">{candidate.party}</td>
               <td className="px-6 py-4 text-gray-600">{candidate.votingId}</td>
-              <td className="px-6 py-4">
-                {candidate.photo ? (
-                  <img src={candidate.photo} alt="Candidate" className="w-12 h-12 rounded-full" />
-                ) : (
-                  "No Photo"
-                )}
-              </td>
             </tr>
           ))}
         </tbody>

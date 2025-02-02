@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { ArrowRight, Wallet, ShoppingCart, Cloud, BarChart2 } from "lucide-react"
+import { Wallet, ShoppingCart, Cloud, BarChart2 } from "lucide-react"
 import LoadingWrapper from "@/components/LoadingWrapper"
 import { Navbar } from "@/components/Navbar"
-import { Footer } from "@/components/Footer"
 import { useRouter } from "next/navigation"
-import { ProductCard } from "@/components/product-card"
 import Link from "next/link"
 import Chatbot from "@/components/Chatbox"
 
@@ -46,12 +44,12 @@ export default function LandingPage() {
     setMounted(true)
   }, [])
   if (!mounted) return null
-  
+
   return (
     <div>
       <LoadingWrapper>
         <Navbar />
-        
+
         {/* Hero Section */}
         <section className="pt-24 md:pt-32 py-24 px-6 md:px-12 text-center bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 text-white">
           <motion.h1
@@ -71,11 +69,11 @@ export default function LandingPage() {
             Empowering citizens with seamless access to government services.
           </motion.p>
           <Link href="/signup">
-          <button
-  className="px-6 py-3 border-2 border-gray-300 text-white font-medium rounded-full hover:bg-gray-100 hover:text-gray-800 transition-all duration-200 ease-in-out"
->
-  Get Started
-</button>
+            <button
+              className="px-6 py-3 border-2 border-gray-300 text-white font-medium rounded-full hover:bg-gray-100 hover:text-gray-800 transition-all duration-200 ease-in-out"
+            >
+              Get Started
+            </button>
 
 
 
@@ -110,7 +108,7 @@ export default function LandingPage() {
           <div className="text-center">
             <p className="text-sm text-gray-300">&copy; 2025 MyGovt. All rights reserved.</p>
           </div>
-          <Chatbot/>
+          <Chatbot />
         </footer>
       </LoadingWrapper>
     </div>
