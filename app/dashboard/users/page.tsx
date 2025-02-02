@@ -10,6 +10,9 @@ import withAuth from "@/components/withAuth";
 import Card from "@/components/ComplaintCard";
 import VoteCard from "@/components/VoteCard";
 import AddDocs from "@/components/AddDocs";
+import { PieChart } from "lucide-react";
+import CardWithPieChart from "@/components/ShowPie";
+import Link from "next/link";
 
 function Dashboard() {
   const loading = useAuthGuard(); // Get loading state from the hook
@@ -68,6 +71,14 @@ function Dashboard() {
             <Card />
             <VoteCard />
             <AddDocs />
+            <Link href="/Piechart">
+            <div
+      className="cursor-pointer bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg"
+    >
+      <h3 className="text-xl font-bold text-gray-700">Live Voting</h3>
+      <p className="text-gray-500 mt-2">see live voiting pie chart</p>
+    </div>
+            </Link>
           </div>
 
         </div>
