@@ -48,6 +48,9 @@ function Dashboard() {
             <Sidebar />
           </div>
         </div>
+               
+                
+            </div>
 
         {/* Main content */}
         <div
@@ -67,6 +70,7 @@ function Dashboard() {
             <VoteCard />
             <AddDocs />
           </div>
+
         </div>
       </div>
     </div>
