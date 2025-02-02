@@ -46,8 +46,10 @@ function Dashboard() {
         >
           <div className="h-full w-64 mt-16 border-r border-gray-200 dark:border-gray-700">
             <Sidebar />
-          </div>
         </div>
+               
+                
+            </div>
 
         {/* Main content */}
         <div
@@ -67,6 +69,7 @@ function Dashboard() {
             <VoteCard />
             <AddDocs />
           </div>
+
         </div>
       </div>
     </div>

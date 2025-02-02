@@ -57,4 +57,4 @@ function Election() {
   );
 }
 
-export default withAuth(Election, "User");
+export default Election;
