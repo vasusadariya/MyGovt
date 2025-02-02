@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["lh3.googleusercontent.com"],
   },
+  env: {
+    LANGFLOW_APPLICATION_TOKEN: process.env.LANGFLOW_APPLICATION_TOKEN,
+  },
 };
 
 export default nextConfig;
