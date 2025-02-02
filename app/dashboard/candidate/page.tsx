@@ -7,7 +7,6 @@ import axios from 'axios';
 
 import { X, UserPlus } from "lucide-react";
 
-
 interface Candidate {
   _id: string;
   name: string;
