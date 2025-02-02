@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer"
 import { useRouter } from "next/navigation"
 import { ProductCard } from "@/components/product-card"
 import Link from "next/link"
+import Chatbot from "@/components/Chatbox"
 
 const features = [
   {
@@ -109,6 +110,7 @@ export default function LandingPage() {
           <div className="text-center">
             <p className="text-sm text-gray-300">&copy; 2025 MyGovt. All rights reserved.</p>
           </div>
+          <Chatbot/>
         </footer>
       </LoadingWrapper>
     </div>
