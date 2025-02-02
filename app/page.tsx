@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer"
 import { useRouter } from "next/navigation"
 import { ProductCard } from "@/components/product-card"
 import Link from "next/link"
+
 const features = [
   {
     href: "/wallet",
@@ -36,29 +37,6 @@ const features = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "ohn Doe",
-    role: "Investor",
-    quote: "This platform has revolutionized the way I manage my investments.",
-  },
-  {
-    name: "Jane Smith",
-    role: "Entrepreneur",
-    quote: "The commerce features have made it incredibly easy to run my online business.",
-  },
-  {
-    name: "Alex Johnson",
-    role: "Financial Analyst",
-    quote: "The analytical tools provided are unparalleled in the industry.",
-  },
-  {
-    name: "Love",
-    role: "Financial Analyst",
-    quote: "The analytical tools provided are unparalleled in the industry.",
-  },
-];
-
 export default function LandingPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false)
@@ -67,60 +45,72 @@ export default function LandingPage() {
     setMounted(true)
   }, [])
   if (!mounted) return null
+  
   return (
     <div>
       <LoadingWrapper>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+        <Navbar />
+        
         {/* Hero Section */}
-        <section className="pt-20 md:pt-32 px-4 md:px-8 text-center">
+        <section className="pt-24 md:pt-32 py-24 px-6 md:px-12 text-center bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 text-white">
           <motion.h1
-            className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-gray-100 mb-6"
+            className="text-4xl md:text-5xl font-bold mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Welcome to My Govt
+            Welcome to MyGovt
           </motion.h1>
           <motion.p
-            className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8"
+            className="text-lg md:text-xl mb-8 text-gray-300"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Empowering your financial journey with cutting-edge solutions
+            Empowering citizens with seamless access to government services.
           </motion.p>
-          <Link href="/signup" className="flex justify-center items-center">
-                  <button
-                    className="px-4 py-2 flex justify-center items-center rounded-lg border-2 border-[#000000] bg-white
-                    text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
-                    dark:shadow-[3px_3px_0px_0px_#4ade80] dark:hover:shadow-[1px_1px_0px_0px_#4ade80]
-                    hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                  >
-                    <ArrowRight className="w-6 h-6" />
-                    Get Started
-                  </button>
-                </Link>
+          <Link href="/signup">
+          <button
+  className="px-6 py-3 border-2 border-gray-300 text-white font-medium rounded-full hover:bg-gray-100 hover:text-gray-800 transition-all duration-200 ease-in-out"
+>
+  Get Started
+</button>
 
+
+
+          </Link>
         </section>
 
         {/* Features Section */}
-        <section className="py-20 px-4 md:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
+        <section className="py-20 px-6 md:px-12 bg-gray-50">
+          <h2 className="text-3xl md:text-4xl font-semibold text-center text-gray-900 dark:text-gray-100 mb-12">
             Govt. Schemes
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+            {features.map((feature, index) => (
+              <Link key={index} href={feature.href}>
+                <motion.div
+                  className="p-8 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                  <feature.icon className="w-12 h-12 text-gray-600 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </motion.div>
+              </Link>
+            ))}
           </div>
         </section>
 
-        
-
-       
-        <Footer />
-      </div>
-       </LoadingWrapper>
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white py-12 mt-12">
+          <div className="text-center">
+            <p className="text-sm text-gray-300">&copy; 2025 MyGovt. All rights reserved.</p>
+          </div>
+        </footer>
+      </LoadingWrapper>
     </div>
   )
 }
-

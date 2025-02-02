@@ -4,6 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import withAuth from '@/components/withAuth';
 import axios from 'axios';
+
 import { X, UserPlus } from "lucide-react";
 
 interface Candidate {
@@ -76,6 +77,9 @@ function CandidateDashboard() {
       setCandidates(updatedCandidates.data.candidates);
 
       setFormData({ name: '', gender: '', age: '', promises: '', party: '', votingId: '' });
+
+      const response2 = await axios.post("http://localhost:3000/candidate", formData);
+      console.log("Form submitted successfully:", response.data);
       
       setFormData({
         name: "",
@@ -240,4 +244,6 @@ function CandidateDashboard() {
 
 
 export default withAuth(CandidateDashboard, 'Candidate');
+
+
 

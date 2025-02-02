@@ -1,17 +1,17 @@
 import Link from 'next/link'
-import { CheckSquare, InboxIcon, House,LogOut} from 'lucide-react'
+import { CheckSquare, InboxIcon, House, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'firebase/auth'
 import { auth } from '@/app/firebase/config'
 
 const navigation = [
   { name: 'Home', icon: House, href: '/' },
-  { name: 'Tasks', icon: CheckSquare, href: '/tasks' },
-  { name: 'Inbox', icon: InboxIcon, href: '/inbox' },
+  { name: 'Inbox', icon: InboxIcon, href: '/Inbox' },
 ]
 
 export function Sidebar() {
   const router = useRouter()
+
   const handleLogout = async () => {
     try {
       await signOut(auth); // Sign out the user
@@ -20,29 +20,31 @@ export function Sidebar() {
       console.error("Error signing out:", err);
     }
   };
-  return (
-    <div className="mt-14 fixed inset-y-0 left-0 w-64 bg-black text-white dark:bg-gray-900 p-4">
-      <div className="space-y-1">
-        <p className="text-xs text-gray-400 uppercase mb-2 ">Navigation</p>
 
-        <div className=" hover:bg-white/10 hover:text-purple-500 dark:hover:text-green-400">
-        <Link href="/Inbox">
-        <button className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg">
-          <span>Inbox</span>
-        </button>
-        </Link>
+  return (
+    <div className="mt-16 fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-6 rounded-lg shadow-lg border-r border-gray-300 dark:border-gray-700">
+      <div className="space-y-4">
+        <p className="text-xs font-semibold text-black uppercase mb-4">Navigation</p>
+
+        {navigation.map((item) => (
+          <Link href={item.href} key={item.name}>
+            <button className="flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-green-400 transition-all duration-200">
+              <item.icon className="w-5 h-5" />
+              <span>{item.name}</span>
+            </button>
+          </Link>
+        ))}
+
+        <div className="mt-6">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-4 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300 transition-all duration-200"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
         </div>
-        
-        <div className=" hover:bg-white/10 hover:text-purple-500 dark:hover:text-green-400">
-        <button className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg"
-        onClick={handleLogout}
-        >
-          <LogOut className="w-5 h-5" />
-          <span>Logout</span>
-        </button>
-        </div>
-       
-      </div>  
+      </div>
     </div>
   )
 }
