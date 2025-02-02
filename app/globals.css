@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+nextjs-portal {
+  display: none;
+}
+
 /* Apply dark mode instantly to prevent flicker */
 html.dark {
     background-color: #121212;

@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PieChart from '@/components/Piechart';
+import PieChartComponent from '@/components/PieChart';
+
 
 
 interface Candidate {
@@ -20,7 +21,7 @@ function Election() {
     fetchCandidates();
 
     // Live updates every 5 seconds
-    const interval = setInterval(fetchCandidates, 5000);
+    const interval = setInterval(fetchCandidates, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -37,7 +38,7 @@ function Election() {
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Live Election Results</h1>
 
-        <PieChart/>
+        <PieChartComponent/>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {candidates.map((candidate, index) => (
