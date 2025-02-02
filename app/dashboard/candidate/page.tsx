@@ -16,6 +16,7 @@ interface Candidate {
   party: string;
   votingId: number;
   votes: number;
+  photo: string; // Add photo field here
 }
 
 interface FormData {
@@ -25,6 +26,7 @@ interface FormData {
   promises: string;
   party: string;
   votingId: number | string;
+  photo: File | null; // Add photo field here
 }
 
 function CandidateDashboard() {
@@ -37,6 +39,7 @@ function CandidateDashboard() {
     promises: "",
     party: "",
     votingId: "",
+    photo: null, // Initialize photo field to null
   });
 
   useEffect(() => {
@@ -52,44 +55,53 @@ function CandidateDashboard() {
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target as HTMLInputElement | HTMLSelectElement;
+    const files = (e.target as HTMLInputElement).files;
 
-    setFormData({ ...formData, [name]: name === "age" || name === "votingId" ? Number(value) : value });
-
-
-    if ((name === "age" || name === "votingId") && value.startsWith("0")) {
-      setFormData({ ...formData, [name]: value.replace(/^0+/, "") });
+    if (name === "photo" && files) {
+      setFormData({ ...formData, [name]: files[0] });
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData({
+        ...formData,
+        [name]: name === "age" || name === "votingId" ? Number(value) : value,
+      });
     }
-
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
 
-      const response = await axios.post("http://localhost:8080/candidates", formData);
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("gender", formData.gender);
+    formDataToSend.append("age", formData.age.toString());
+    formDataToSend.append("promises", formData.promises);
+    formDataToSend.append("party", formData.party);
+    formDataToSend.append("votingId", formData.votingId.toString());
+
+    if (formData.photo) {
+      formDataToSend.append("photo", formData.photo);
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/candidates", formDataToSend, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       console.log('Form submitted successfully:', response.data);
 
-      // Refresh candidates list after submission
       const updatedCandidates = await axios.get("http://localhost:8080/candidate");
       setCandidates(updatedCandidates.data.candidates);
 
-      setFormData({ name: '', gender: '', age: '', promises: '', party: '', votingId: '' });
-
-      const response2 = await axios.post("http://localhost:3000/candidate", formData);
-      console.log("Form submitted successfully:", response.data);
-      
       setFormData({
-        name: "",
-        gender: "",
-        age: "",
-        promises: "",
-        party: "",
-        votingId: "",
+        name: '',
+        gender: '',
+        age: '',
+        promises: '',
+        party: '',
+        votingId: '',
+        photo: null,
       });
-
 
       setShowForm(false);
     } catch (error) {
@@ -196,7 +208,19 @@ function CandidateDashboard() {
                     required
                   />
                 </div>
-                
+
+                {/* Upload Photo */}
+                <div>
+                  <label className="block text-gray-700 dark:text-gray-300">Upload Photo:</label>
+                  <input
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -217,6 +241,7 @@ function CandidateDashboard() {
           </div>
         )}
       </div>
+
       <h2 className="text-2xl font-semibold mt-10">List of Candidates</h2>
       <table className="w-full border border-gray-300 rounded-lg shadow-md overflow-hidden">
         <thead className="bg-blue-500 text-white">
@@ -225,6 +250,7 @@ function CandidateDashboard() {
             <th className="px-6 py-3 text-left">Candidate Name</th>
             <th className="px-6 py-3 text-left">Party</th>
             <th className="px-6 py-3 text-left">Voting ID</th>
+            <th className="px-6 py-3 text-left">Photo</th> {/* New column for photo */}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
@@ -234,6 +260,13 @@ function CandidateDashboard() {
               <td className="px-6 py-4">{candidate.name}</td>
               <td className="px-6 py-4">{candidate.party}</td>
               <td className="px-6 py-4 text-gray-600">{candidate.votingId}</td>
+              <td className="px-6 py-4">
+                {candidate.photo ? (
+                  <img src={candidate.photo} alt="Candidate" className="w-12 h-12 rounded-full" />
+                ) : (
+                  "No Photo"
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -242,8 +275,4 @@ function CandidateDashboard() {
   );
 }
 
-
 export default withAuth(CandidateDashboard, 'Candidate');
-
-
-
