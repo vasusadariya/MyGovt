@@ -1,15 +1,10 @@
 "use client";
 
-
 import { Navbar } from '@/components/Navbar';
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import withAuth from '@/components/withAuth';
 import axios from 'axios';
 
-import { Navbar } from "@/components/Navbar";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import withAuth from "@/components/withAuth";
-import axios from "axios";
 import { X, UserPlus } from "lucide-react";
 
 
@@ -84,7 +79,7 @@ function CandidateDashboard() {
 
       setFormData({ name: '', gender: '', age: '', promises: '', party: '', votingId: '' });
 
-      const response = await axios.post("http://localhost:3000/candidate", formData);
+      const response2 = await axios.post("http://localhost:3000/candidate", formData);
       console.log("Form submitted successfully:", response.data);
       
       setFormData({
@@ -251,5 +246,5 @@ function CandidateDashboard() {
 
 export default withAuth(CandidateDashboard, 'Candidate');
 
-export default withAuth(CandidateDashboard, "Candidate");
+
 
