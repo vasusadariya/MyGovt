@@ -1,5 +1,5 @@
 import NextAuth from "next-auth/next"
-import { Account, Profile } from "next-auth"
+import { Account } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
@@ -10,7 +10,7 @@ import bcrypt from "bcryptjs"
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string
-    role?: string
+    role?: string | null
     accessToken?: string
   }
 }
@@ -23,7 +23,7 @@ declare module "next-auth" {
       name?: string | null
       email?: string | null
       image?: string | null
-      role?: string
+      role?: string | null
     }
   }
 
@@ -32,7 +32,7 @@ declare module "next-auth" {
     name?: string | null
     email?: string | null
     image?: string | null
-    role?: string
+    role?: string | null
   }
 }
 
@@ -122,7 +122,7 @@ const authOptions = {
     error: "/auth/error",
   },
   callbacks: {
-    async jwt({ token, user, account }: { token: import("next-auth/jwt").JWT, user?: import("next-auth").User, account?: Account | null }) {
+    async jwt({ token, user, account }) {
       // Add id and role to the token if available
       if (account && user) {
         token.id = user.id
@@ -131,21 +131,14 @@ const authOptions = {
       }
       return token
     },
-    async session({ session, token }: { session: import("next-auth").Session, token: import("next-auth/jwt").JWT }) {
+    async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as string
+        session.user.role = token.role as string | null
       }
       return session
     },
-    async signIn(params: {
-      user: import("next-auth").User
-      account: Account | null
-      profile?: Profile
-      email?: { verificationRequest?: boolean }
-      credentials?: Record<string, unknown>
-    }) {
-      const { user, account, profile } = params
+    async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         try {
           await client.connect()
@@ -162,7 +155,7 @@ const authOptions = {
               image: user.image,
               role: "user",
               provider: "google",
-              googleId: profile?.sub,
+              googleId: (profile as any)?.sub,
               createdAt: new Date(),
               updatedAt: new Date(),
             })
@@ -173,7 +166,7 @@ const authOptions = {
                 $set: {
                   name: user.name,
                   image: user.image,
-                  googleId: profile?.sub,
+                  googleId: (profile as any)?.sub,
                   updatedAt: new Date(),
                 },
               },
