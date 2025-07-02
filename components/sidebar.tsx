@@ -1,12 +1,13 @@
-import Link from 'next/link'
-import { CheckSquare, InboxIcon, House, LogOut } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { signOut } from 'firebase/auth'
-import { auth } from '@/app/firebase/config'
+"use client"
+
+import Link from "next/link"
+import { InboxIcon, HomeIcon as House, LogOut } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { signOut } from "next-auth/react"
 
 const navigation = [
-  { name: 'Home', icon: House, href: '/' },
-  { name: 'Inbox', icon: InboxIcon, href: '/Inbox' },
+  { name: "Home", icon: House, href: "/" },
+  { name: "Inbox", icon: InboxIcon, href: "/Inbox" },
 ]
 
 export function Sidebar() {
@@ -14,12 +15,11 @@ export function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Sign out the user
-      router.push("/"); // Redirect to login page after sign-out
+      await signOut({ callbackUrl: "/" })
     } catch (err) {
-      console.error("Error signing out:", err);
+      console.error("Error signing out:", err)
     }
-  };
+  }
 
   return (
     <div className="mt-16 fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-6 rounded-lg shadow-lg border-r border-gray-300 dark:border-gray-700">

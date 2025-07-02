@@ -3,10 +3,7 @@ import Link from "next/link"
 import { Binary, Menu, X, LayoutDashboard } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { auth, db } from "@/app/firebase/config"
-import { signOut } from "firebase/auth"
-import { doc, getDoc } from "firebase/firestore"
+import { useSession, signOut } from "next-auth/react"
 import Image from "next/image"
 
 const navigation = [
@@ -18,15 +15,13 @@ const navigation = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [user, loading] = useAuthState(auth)
-  const [role, setRole] = useState<string | null>(null)
+  const { data: session, status } = useSession()
   const [dashboardLink, setDashboardLink] = useState("/dashboard/users")
   const router = useRouter()
 
   const handleLogout = async () => {
     try {
-      await signOut(auth)
-      router.push("/")
+      await signOut({ callbackUrl: "/" })
     } catch (err) {
       console.error("Error signing out:", err)
     }
@@ -52,44 +47,22 @@ export function Navbar() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Fetch user role from Firestore
+  // Set dashboard link based on user role
   useEffect(() => {
-    const fetchUserRole = async () => {
-      if (user) {
-        try {
-          const userRef = doc(db, "users", user.uid)
-          const userDoc = await getDoc(userRef)
-          console.log("User document:", userDoc.data()) // Debug log
-          if (userDoc.exists()) {
-            const userRole = userDoc.data().role
-            console.log("User role:", userRole) // Debug log
-            setRole(userRole)
-            setDashboardLink(userRole == "candidate" ? "/dashboard/candidate" : "/dashboard/users")
-          } else {
-            console.log("User document does not exist") // Debug log
-            setRole(null)
-            setDashboardLink("/dashboard/users")
-          }
-        } catch (error) {
-          console.error("Error fetching user role:", error)
-          setRole(null)
+    if (session?.user?.role) {
+      switch (session.user.role) {
+        case "candidate":
+          setDashboardLink("/dashboard/candidate")
+          break
+        case "admin":
+          setDashboardLink("/dashboard/admin")
+          break
+        default:
           setDashboardLink("/dashboard/users")
-        }
-      } else {
-        console.log("No user logged in") // Debug log
-        setRole(null)
-        setDashboardLink("/dashboard/users")
+          break
       }
     }
-
-    if (user) {
-      fetchUserRole()
-    }
-  }, [user])
-
-  useEffect(() => {
-    console.log("Dashboard link updated:", dashboardLink)
-  }, [dashboardLink])
+  }, [session])
 
   return (
     <nav
@@ -107,14 +80,14 @@ export function Navbar() {
 
           {/* User Authentication Section */}
           <div className="flex items-center gap-4">
-            {loading ? (
+            {status === "loading" ? (
               // Loading placeholder
               <div className="flex gap-4">
                 <div className="w-24 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
                 <div className="w-24 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
                 <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
               </div>
-            ) : user ? (
+            ) : session ? (
               <>
                 {/* Dashboard Button */}
                 <Link href={dashboardLink}>
@@ -133,7 +106,7 @@ export function Navbar() {
                 <button
                   onClick={handleLogout}
                   className="hidden md:flex px-4 py-2 rounded-lg border-2 border-[#000000] bg-red-500 text-white
-                    text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
+                    text-sm font-semibold shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
                     dark:shadow-[3px_3px_0px_0px_#4ade80] dark:hover:shadow-[1px_1px_0px_0px_#4ade80]
                     hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
@@ -143,8 +116,8 @@ export function Navbar() {
                 {/* User Avatar */}
                 <div className="relative group">
                   <Image
-                    src={user?.photoURL || "/default-avatar.svg"}
-                    alt={user?.displayName || "User Avatar"}
+                    src={session.user?.image || "/default-avatar.svg"}
+                    alt={session.user?.name || "User Avatar"}
                     width={50}
                     height={50}
                     className="rounded-full cursor-pointer"
@@ -152,8 +125,9 @@ export function Navbar() {
                   />
                   {/* Optional Dropdown */}
                   <div className="absolute right-0 hidden w-48 p-2 mt-2 bg-white border rounded-lg shadow-lg group-hover:block">
-                    <p className="text-sm text-gray-700">{user.displayName || "User"}</p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
+                    <p className="text-sm text-gray-700">{session.user?.name || "User"}</p>
+                    <p className="text-xs text-gray-500">{session.user?.email}</p>
+                    <p className="text-xs text-blue-600 font-semibold capitalize">{session.user?.role}</p>
                     <hr className="my-2" />
                   </div>
                 </div>
@@ -161,7 +135,7 @@ export function Navbar() {
             ) : (
               <>
                 {/* Login and Sign-Up Buttons */}
-                <Link href="/login">
+                <Link href="/auth/signin">
                   <button
                     className="px-4 py-2 hidden md:flex rounded-lg border-2 border-[#000000] 
                     text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
@@ -171,7 +145,7 @@ export function Navbar() {
                     Login
                   </button>
                 </Link>
-                <Link href="/signup">
+                <Link href="/auth/signup">
                   <button
                     className="px-4 py-2 hidden md:flex rounded-lg border-2 border-[#000000] 
                     text-sm font-semibold text-black shadow-[3px_3px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] 
@@ -225,9 +199,9 @@ export function Navbar() {
 
               {/* Mobile Auth Buttons */}
               <div className="flex flex-col gap-4 mt-8">
-                {loading ? (
+                {status === "loading" ? (
                   <div>Loading...</div>
-                ) : user ? (
+                ) : session ? (
                   <>
                     {/* Dashboard Button */}
                     <Link href={dashboardLink}>
@@ -254,12 +228,12 @@ export function Navbar() {
                 ) : (
                   <>
                     <button className="w-auto px-2 py-2  text-white rounded-lg border-2 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_#4ade80] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_#4ade80] transition-shadow duration-200">
-                      <Link href="/login" onClick={() => setIsOpen(false)}>
+                      <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
                         Login
                       </Link>
                     </button>
                     <button className="w-auto px-2 py-2 text-white rounded-lg border-2 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_#4ade80] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_#4ade80] transition-shadow duration-200">
-                      <Link href="/signup" onClick={() => setIsOpen(false)}>
+                      <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
                         Sign up
                       </Link>
                     </button>
@@ -273,4 +247,3 @@ export function Navbar() {
     </nav>
   )
 }
-

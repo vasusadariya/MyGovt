@@ -12,7 +12,7 @@ interface Candidate {
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF1919"];
 
-const PieChartComponent: React.FC = () => {
+export const PieChartComponent: React.FC = () => {
   const [data, setData] = useState<{ name: string; votes: number }[]>([]);
 
   useEffect(() => {
@@ -66,5 +66,3 @@ const PieChartComponent: React.FC = () => {
     </div>
   );
 };
-
-export default PieChartComponent;
