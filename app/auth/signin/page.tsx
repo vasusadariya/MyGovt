@@ -12,11 +12,11 @@ declare module "next-auth" {
   }
 }
 import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert } from "@/components/ui/alert"
+import { Input } from "../../../components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Alert } from "../../../components/ui/alert"
 import { Eye, EyeOff, Mail, Lock, Chrome } from "lucide-react"
+import { Button } from "../../../components/ui/button"
 
 export default function SignIn() {
   const [email, setEmail] = useState("")
