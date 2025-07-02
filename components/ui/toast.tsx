@@ -124,11 +124,5 @@ export {
   ToastTitle,
   ToastDescription,
   ToastClose,
-  ToastAction,
-<<<<<<< HEAD
+  ToastAction
 }
-=======
-}
-
-export { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport }
->>>>>>> origin/main
