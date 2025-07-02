@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 
 interface FileData {
   url: string
@@ -26,13 +27,6 @@ export default function IPFSDocumentPage() {
   const [fileData, setFileData] = useState<FileData | null>(null)
   const [error, setError] = useState("")
   const [blockchainVerified, setBlockchainVerified] = useState(false)
-
-  useEffect(() => {
-    if (params?.hash) {
-      setIpfsHash(params.hash as string)
-      handleRetrieve(params.hash as string)
-    }
-  }, [params?.hash])
 
   const handleRetrieve = async (hash?: string) => {
     const targetHash = hash || ipfsHash
@@ -61,7 +55,7 @@ export default function IPFSDocumentPage() {
       const contentLength = response.headers.get("content-length")
 
       // Verify on blockchain (simulated for demo)
-      await verifyOnBlockchain(targetHash)
+      await verifyOnBlockchain()
 
       setFileData({
         url: gatewayUrl,
@@ -79,7 +73,15 @@ export default function IPFSDocumentPage() {
     }
   }
 
-  const verifyOnBlockchain = async (hash: string) => {
+  useEffect(() => {
+    if (params?.hash) {
+      setIpfsHash(params.hash as string)
+      handleRetrieve(params.hash as string)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params?.hash])
+
+  const verifyOnBlockchain = async () => {
     // Simulate blockchain verification
     await new Promise((resolve) => setTimeout(resolve, 1500))
     setBlockchainVerified(true)
@@ -296,16 +298,17 @@ export default function IPFSDocumentPage() {
                   {fileData.type.startsWith("image/") && (
                     <div className="mt-8 pt-8 border-t border-slate-200">
                       <h3 className="text-xl font-bold text-slate-800 mb-6">Document Preview</h3>
-                      <div className="bg-slate-100 rounded-lg p-6 text-center">
-                        <img
+                        <Image
                           src={fileData.url || "/placeholder.svg"}
                           alt="Document preview"
+                          width={600}
+                          height={400}
                           className="max-w-full max-h-96 mx-auto rounded-lg shadow-lg border-2 border-slate-300"
                           onError={(e) => {
-                            e.currentTarget.style.display = "none"
+                            (e.target as HTMLImageElement).style.display = "none"
                           }}
+                          unoptimized
                         />
-                      </div>
                     </div>
                   )}
                 </CardContent>

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "@jest/globals"
+import { describe, it, expect, beforeEach } from "@jest/globals"
 
 describe("Voting API", () => {
   let userToken: string
@@ -70,3 +70,6 @@ describe("Voting API", () => {
     })
   })
 })
+// The beforeEach function is already provided by Jest, so you don't need to implement it yourself.
+// You can safely remove this custom implementation.
+

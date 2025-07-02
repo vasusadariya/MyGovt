@@ -88,4 +88,4 @@ function UserElections() {
   )
 }
 
-export default withAuth(UserElections, "user")
+export default withAuth(UserElections)

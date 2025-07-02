@@ -3,14 +3,29 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { MongoClient } from "mongodb"
 
+import { apiCache } from "@/lib/cache"
+import { rateLimiter, getRateLimitIdentifier } from "@/lib/rate-limiter"
+
 const client = new MongoClient(process.env.MONGODB_URI!)
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    // Rate limiting
+    const identifier = getRateLimitIdentifier(request)
+    if (!rateLimiter.isAllowed(identifier, { windowMs: 60000, maxRequests: 30 })) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 })
+    }
 
+    const session = await getServerSession(authOptions)
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Check cache first
+    const cacheKey = "candidates:all"
+    const cachedData = apiCache.get(cacheKey)
+    if (cachedData) {
+      return NextResponse.json(cachedData)
     }
 
     await client.connect()
@@ -19,14 +34,19 @@ export async function GET(request: NextRequest) {
     const candidates = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
     const totalVotes = candidates.reduce((sum, candidate) => sum + (candidate.votes || 0), 0)
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       totalVotes,
       candidates: candidates.map((candidate) => ({
         ...candidate,
         _id: candidate._id.toString(),
       })),
-    })
+    }
+
+    // Cache for 30 seconds
+    apiCache.set(cacheKey, responseData, 30)
+
+    return NextResponse.json(responseData)
   } catch (error) {
     console.error("Error fetching candidates:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

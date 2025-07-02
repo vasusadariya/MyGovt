@@ -1,10 +1,8 @@
-const mongoose = require('mongoose');
-const express = require('express');
-const cors = require('cors');
+import mongoose from 'mongoose';
+import express from 'express';
+import cors from 'cors';
 
-
-const User = require('./schema');
-const Candidate = require('./schema');
+import Candidate from './schema.js';
 
 const port = 8080;
 const app = express();
@@ -19,7 +17,7 @@ app.listen(port, () => {
 const dbconnect = async () => {
     try {
         await mongoose.connect(
-            "mongodb+srv://jeetandel0404:6yw7VgRUOOf4Hb8S@dotslash.cve9d.mongodb.net/voting-final"
+            "mongodb+srv://sadariyavasu02:W0IblExdomTGdVDY@cluster0.kxoxrvv.mongodb.net/dotslash"
         );
         console.log("Database is connected successfully!");
     } catch (e) {

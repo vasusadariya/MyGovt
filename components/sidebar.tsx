@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { InboxIcon, HomeIcon as House, LogOut } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 
 const navigation = [
@@ -11,7 +10,7 @@ const navigation = [
 ]
 
 export function Sidebar() {
-  const router = useRouter()
+
 
   const handleLogout = async () => {
     try {

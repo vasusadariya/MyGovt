@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SessionProvider } from "@/components/session-provider"
 import "@/app/styles/animations.css"
+import { Providers } from "./providers"
 
 const roboto = Roboto_Flex({ subsets: ["latin"] })
 
@@ -22,7 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto.className}>
         <SessionProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider><Providers>{children}</Providers></ThemeProvider>
         </SessionProvider>
       </body>
     </html>

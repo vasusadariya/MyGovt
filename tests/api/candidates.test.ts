@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "@jest/globals"
 
 describe("Candidates API", () => {
   let authToken: string
-  let candidateId: string
 
   beforeEach(async () => {
     // Setup authenticated session for testing
@@ -50,10 +49,9 @@ describe("Candidates API", () => {
       expect(response.status).toBe(200)
       const data = await response.json()
       expect(data.success).toBe(true)
+      expect(data.success).toBe(true)
       expect(data.message).toBe("Candidate registered successfully")
-      candidateId = data.candidateId
     })
-
     it("should validate required fields", async () => {
       const incompleteData = {
         name: "Jane Doe",

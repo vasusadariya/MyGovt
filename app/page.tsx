@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Wallet, ShoppingCart, Cloud, BarChart2 } from "lucide-react"
 import LoadingWrapper from "@/components/LoadingWrapper"
 import { Navbar } from "@/components/Navbar"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Chatbot from "@/components/Chatbox"
 
@@ -37,7 +36,6 @@ const features = [
 ]
 
 export default function LandingPage() {
-  const router = useRouter()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

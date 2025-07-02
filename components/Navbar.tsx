@@ -2,8 +2,8 @@
 import Link from "next/link"
 import { Binary, Menu, X, LayoutDashboard } from "lucide-react"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
+
 import Image from "next/image"
 
 const navigation = [
@@ -12,12 +12,23 @@ const navigation = [
   { name: "Insights", href: "/insights" },
 ]
 
+type SessionUser = {
+  name?: string | null
+  email?: string | null
+  image?: string | null
+  role?: string | null
+}
+
+type SessionType = {
+  user?: SessionUser
+}
+
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const { data: session, status } = useSession()
+  const { data: sessionData, status } = useSession()
+  const session = sessionData as SessionType
   const [dashboardLink, setDashboardLink] = useState("/dashboard/users")
-  const router = useRouter()
 
   const handleLogout = async () => {
     try {

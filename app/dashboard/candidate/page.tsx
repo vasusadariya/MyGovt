@@ -240,4 +240,4 @@ function CandidateDashboard() {
   )
 }
 
-export default withAuth(CandidateDashboard, "candidate")
+export default withAuth(CandidateDashboard)

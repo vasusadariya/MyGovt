@@ -31,19 +31,44 @@ function Dashboard() {
   })
 
   useEffect(() => {
-    // Fetch user-specific data
-    const complaints = JSON.parse(localStorage.getItem("complaints") || "[]")
-    const userComplaints = complaints.filter((c: any) => c.name === session?.user?.name)
-    const pendingComplaints = userComplaints.filter((c: any) => c.status === "Pending").length
-    const resolvedComplaints = userComplaints.filter((c: any) => c.status === "Resolved").length
+    const fetchUserData = async () => {
+      try {
+        // Fetch complaints
+        const complaintsResponse = await fetch("/api/complaints")
+        if (complaintsResponse.ok) {
+          const complaintsData = await complaintsResponse.json()
+          interface Complaint {
+            status: string
+            // add other properties if needed
+          }
+          const userComplaints: Complaint[] = complaintsData.complaints || []
+          const pendingComplaints = userComplaints.filter((c: Complaint) => c.status === "Pending").length
+          const resolvedComplaints = userComplaints.filter((c: Complaint) => c.status === "Resolved").length
 
-    setStats({
-      myComplaints: userComplaints.length,
-      pendingComplaints,
-      resolvedComplaints,
-      documentsUploaded: Number.parseInt(localStorage.getItem("documentsUploaded") || "0"),
-      votingStatus: localStorage.getItem("hasVoted") ? "voted" : "not-voted",
-    })
+          // Fetch voting status
+          const votesResponse = await fetch("/api/votes")
+          const votesData = votesResponse.ok ? await votesResponse.json() : { hasVoted: false }
+
+          // Fetch documents
+          const documentsResponse = await fetch("/api/documents")
+          const documentsData = documentsResponse.ok ? await documentsResponse.json() : { documents: [] }
+
+          setStats({
+            myComplaints: userComplaints.length,
+            pendingComplaints,
+            resolvedComplaints,
+            documentsUploaded: documentsData.documents?.length || 0,
+            votingStatus: votesData.hasVoted ? "voted" : "not-voted",
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+      }
+    }
+
+    if (session) {
+      fetchUserData()
+    }
   }, [session])
 
   const statCards = [
@@ -232,4 +257,4 @@ function Dashboard() {
   )
 }
 
-export default withAuth(Dashboard, "user")
+export default withAuth(Dashboard)

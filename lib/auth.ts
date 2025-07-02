@@ -1,12 +1,14 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
-export async function getServerAuthSession() {
+import type { Session } from "next-auth"
+
+export async function getServerAuthSession(): Promise<Session | null> {
   return await getServerSession(authOptions)
 }
 
 export function requireAuth(allowedRoles?: string[]) {
-  return async (req: Request) => {
+  return async () => {
     const session = await getServerAuthSession()
 
     if (!session?.user) {

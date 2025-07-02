@@ -1,19 +1,51 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
+import NextAuth from "next-auth/next"
+import { Account, Profile } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs"
 
-const client = new MongoClient(process.env.MONGODB_URI!)
+// Extend the JWT type to include custom properties
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string
+    role?: string
+    accessToken?: string
+  }
+}
 
-export const authOptions: NextAuthOptions = {
-  adapter: MongoDBAdapter(client),
+// Extend the Session type to include custom properties
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
+      role?: string
+    }
+  }
+
+  interface User {
+    id: string
+    name?: string | null
+    email?: string | null
+    image?: string | null
+    role?: string
+  }
+}
+
+const client = new MongoClient(process.env.MONGODB_URI!)
+const clientPromise = client.connect()
+
+const authOptions = {
+  adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      profile(profile) {
+      profile(profile: { sub: string; name: string; email: string; picture: string }) {
         return {
           id: profile.sub,
           name: profile.name,
@@ -70,7 +102,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   cookies: {
@@ -78,7 +110,7 @@ export const authOptions: NextAuthOptions = {
       name: "next-auth.session-token",
       options: {
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "lax" as const,
         path: "/",
         secure: process.env.NODE_ENV === "production",
       },
@@ -90,21 +122,30 @@ export const authOptions: NextAuthOptions = {
     error: "/auth/error",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: { token: import("next-auth/jwt").JWT, user?: import("next-auth").User, account?: Account | null }) {
+      // Add id and role to the token if available
       if (account && user) {
+        token.id = user.id
         token.role = user.role
         token.accessToken = account.access_token
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: import("next-auth").Session, token: import("next-auth/jwt").JWT }) {
       if (token && session.user) {
-        session.user.id = token.sub!
+        session.user.id = token.id as string
         session.user.role = token.role as string
       }
       return session
     },
-    async signIn({ user, account, profile }) {
+    async signIn(params: {
+      user: import("next-auth").User
+      account: Account | null
+      profile?: Profile
+      email?: { verificationRequest?: boolean }
+      credentials?: Record<string, unknown>
+    }) {
+      const { user, account, profile } = params
       if (account?.provider === "google") {
         try {
           await client.connect()

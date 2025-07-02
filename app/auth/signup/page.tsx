@@ -88,6 +88,7 @@ export default function SignUp() {
         callbackUrl: "/dashboard/users",
       })
     } catch (error) {
+      console.error("Error signing in:", error)
       setError("Google sign-in failed")
       setLoading(false)
     }
