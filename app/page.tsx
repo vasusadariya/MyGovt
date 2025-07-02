@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { Navbar } from "../components/Navbar"
 import { Footer } from "../components/Footer"
+import { NewsletterSubscription } from "../components/NewsletterSubscription"
 import Link from "next/link"
 import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
@@ -477,6 +478,20 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <NewsletterSubscription variant="inline" />
+          </motion.div>
         </div>
       </section>
 

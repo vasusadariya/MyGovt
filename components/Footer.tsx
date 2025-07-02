@@ -18,8 +18,8 @@ import {
   Users,
   Globe
 } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
+import { NewsletterSubscription } from "./NewsletterSubscription"
+
 const footerSections = [
   {
     title: "Services",
@@ -171,25 +171,8 @@ export function Footer() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Stay Updated with Government News
-                </h3>
-                <p className="text-blue-200">
-                  Get the latest updates on digital government services and policy changes.
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <Input
-                  type="email"
-                  placeholder="Enter your email address"
-                  className="flex-1 bg-white/10 border-blue-700 text-white placeholder:text-blue-300 focus:border-blue-500"
-                />
-                <Button className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold px-6">
-                  Subscribe
-                </Button>
-              </div>
+            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+              <NewsletterSubscription variant="footer" />
             </div>
           </motion.div>
 
