@@ -1,3 +1,6 @@
+import type { DefaultSession, DefaultUser } from "next-auth"
+import type { JWT, DefaultJWT } from "next-auth/jwt"
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -5,21 +8,20 @@ declare module "next-auth" {
       name?: string | null
       email?: string | null
       image?: string | null
-      role?: string | null
-    }
+      role?: 'user' | 'candidate' | 'admin' | null
+    } & DefaultSession["user"]
   }
 
-  interface User {
+  interface User extends DefaultUser {
     id: string
-    name?: string | null
-    email?: string | null
-    image?: string | null
-    role?: string | null
+    role?: 'user' | 'candidate' | 'admin' | null
   }
 }
 
 declare module "next-auth/jwt" {
-  interface JWT {
-    role?: string | null
+  interface JWT extends DefaultJWT {
+    id?: string
+    role?: 'user' | 'candidate' | 'admin' | null
+    accessToken?: string
   }
 }
