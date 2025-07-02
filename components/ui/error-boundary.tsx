@@ -2,8 +2,8 @@
 
 import React from "react"
 import { AlertTriangle, RefreshCw } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { GovernmentCard } from "@/components/ui/government-card"
+import { Button } from "../../components/ui/button"
+import { GovernmentCard } from "../../components/ui/government-card"
 
 interface ErrorBoundaryState {
   hasError: boolean

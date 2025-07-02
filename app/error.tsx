@@ -2,8 +2,8 @@
 
 import { useEffect } from "react"
 import { AlertTriangle, RefreshCw, Home } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { GovernmentCard } from "@/components/ui/government-card"
+import { Button } from "../components/ui/button"
+import { GovernmentCard } from "../components/ui/government-card"
 import Link from "next/link"
 
 export default function Error({
