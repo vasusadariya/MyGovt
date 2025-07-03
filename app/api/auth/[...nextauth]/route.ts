@@ -1,10 +1,10 @@
 import NextAuth from "next-auth/next"
-import { Account } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs"
+import type { NextAuthOptions } from "next-auth"
 
 // Extend the JWT type to include custom properties
 declare module "next-auth/jwt" {
@@ -39,7 +39,7 @@ declare module "next-auth" {
 const client = new MongoClient(process.env.MONGODB_URI!)
 const clientPromise = client.connect()
 
-const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
@@ -118,7 +118,6 @@ const authOptions = {
   },
   pages: {
     signIn: "/auth/signin",
-    signUp: "/auth/signup",
     error: "/auth/error",
   },
   callbacks: {
@@ -138,7 +137,7 @@ const authOptions = {
       }
       return session
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }: { user: import("next-auth").User; account: import("next-auth").Account | null; profile?: { sub?: string } }) {
       if (account?.provider === "google") {
         try {
           await client.connect()
@@ -155,7 +154,7 @@ const authOptions = {
               image: user.image,
               role: "user",
               provider: "google",
-              googleId: (profile as any)?.sub,
+              googleId: profile?.sub,
               createdAt: new Date(),
               updatedAt: new Date(),
             })
@@ -166,7 +165,7 @@ const authOptions = {
                 $set: {
                   name: user.name,
                   image: user.image,
-                  googleId: (profile as any)?.sub,
+                  googleId: profile?.sub,
                   updatedAt: new Date(),
                 },
               },

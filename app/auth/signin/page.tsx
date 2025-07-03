@@ -1,22 +1,22 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { signIn, getSession } from "next-auth/react"
-
-// Extend the Session user type to include 'role'
-declare module "next-auth" {
-  interface User {
-    role?: string | null
-  }
-}
 import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { Input } from "../../../components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
-import { Alert } from "../../../components/ui/alert"
-import { Eye, EyeOff, Mail, Lock, Chrome } from "lucide-react"
+import { Alert, AlertDescription } from "../../../components/ui/alert"
+import { Eye, EyeOff, Mail, Lock, Chrome, AlertCircle } from "lucide-react"
 import { Button } from "../../../components/ui/button"
+
+interface SessionUser {
+  role?: string | null
+}
+
+interface SessionType {
+  user?: SessionUser
+}
 
 export default function SignIn() {
   const [email, setEmail] = useState("")
@@ -31,10 +31,10 @@ export default function SignIn() {
   useEffect(() => {
     // Check if user is already signed in
     const checkSession = async () => {
-      const session = await getSession()
+      const session = await getSession() as SessionType | null
       if (session) {
         // Redirect based on role
-        const role = (session.user as { role?: string | null })?.role
+        const role = session.user?.role
         switch (role) {
           case "admin":
             router.push("/dashboard/admin")
@@ -67,8 +67,8 @@ export default function SignIn() {
         setError(result.error)
       } else if (result?.ok) {
         // Get the session to determine redirect
-        const session = await getSession()
-        const role = session?.user ? (session.user as { role?: string | null })?.role : null
+        const session = await getSession() as SessionType | null
+        const role = session?.user?.role
 
         switch (role) {
           case "admin":
@@ -105,19 +105,19 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-2xl border-2 border-blue-200" variant="government">
+      <Card className="w-full max-w-md shadow-2xl border-2 border-blue-200">
         <CardHeader className="text-center pb-6">
           <CardTitle className="text-3xl font-bold text-blue-900 mb-2">Welcome Back</CardTitle>
-          <p className="text-blue-700">Sign in to your account</p>
+          <p className="text-blue-700">Sign in to your government account</p>
         </CardHeader>
 
         <CardContent className="space-y-6">
           {error && (
             <Alert variant="destructive">
-              <div>
-                <h4 className="font-semibold">Sign In Failed</h4>
-                <p className="text-sm">{error}</p>
-              </div>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Sign In Failed:</strong> {error}
+              </AlertDescription>
             </Alert>
           )}
 
@@ -137,6 +137,7 @@ export default function SignIn() {
                   className="pl-10"
                   variant="government"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -156,18 +157,25 @@ export default function SignIn() {
                   className="pl-10 pr-10"
                   variant="government"
                   required
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
-            <Button type="submit" variant="government" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              variant="government" 
+              className="w-full" 
+              disabled={isLoading || !email || !password}
+            >
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
@@ -194,14 +202,14 @@ export default function SignIn() {
           <div className="text-center space-y-2">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{" "}
-              <a href="/auth/signup" className="text-blue-600 hover:text-blue-800 font-semibold">
+              <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800 font-semibold">
                 Sign up
-              </a>
+              </Link>
             </p>
             <p className="text-sm text-gray-600">
-              <a href="/auth/forgot-password" className="text-blue-600 hover:text-blue-800">
+              <Link href="/auth/forgot-password" className="text-blue-600 hover:text-blue-800">
                 Forgot your password?
-              </a>
+              </Link>
             </p>
           </div>
         </CardContent>

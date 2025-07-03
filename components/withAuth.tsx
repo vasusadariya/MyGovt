@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useEffect, type ComponentType } from "react"
+import React, { useEffect, type ComponentType } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
@@ -11,7 +10,7 @@ interface UserWithRole {
   name?: string | null
   email?: string | null
   image?: string | null
-  role: string
+  role: "user" | "candidate" | "admin"
 }
 
 // Define session type with our custom user
@@ -28,7 +27,7 @@ interface WithAuthProps {
 
 // Configuration for the HOC
 interface WithAuthConfig {
-  requiredRole?: string
+  requiredRole?: "user" | "candidate" | "admin"
   redirectTo?: string
   loadingComponent?: ComponentType
 }
@@ -44,7 +43,10 @@ const DefaultLoadingComponent: React.FC = () => (
 )
 
 // Higher-order component for authentication
-function withAuth<P extends WithAuthProps>(WrappedComponent: ComponentType<P>, config: WithAuthConfig = {}) {
+function withAuth<P extends WithAuthProps>(
+  WrappedComponent: ComponentType<P>, 
+  config: WithAuthConfig = {}
+) {
   const {
     requiredRole,
     redirectTo = "/auth/signin",
@@ -66,7 +68,7 @@ function withAuth<P extends WithAuthProps>(WrappedComponent: ComponentType<P>, c
       }
 
       // Check if user has required role (if specified)
-      if (requiredRole && (session.user as UserWithRole)?.role !== requiredRole) {
+      if (requiredRole && session.user?.role !== requiredRole) {
         router.push("/unauthorized")
         return
       }
@@ -83,13 +85,17 @@ function withAuth<P extends WithAuthProps>(WrappedComponent: ComponentType<P>, c
     }
 
     // Check role requirement
-    if (requiredRole && (session.user as UserWithRole)?.role !== requiredRole) {
+    if (requiredRole && session.user?.role !== requiredRole) {
       return null
     }
 
     // All checks passed, render the wrapped component
     return (
-      <WrappedComponent {...(props as P)} session={session as SessionWithRole} user={session.user as UserWithRole} />
+      <WrappedComponent 
+        {...(props as P)} 
+        session={session as SessionWithRole} 
+        user={session.user as UserWithRole} 
+      />
     )
   }
 

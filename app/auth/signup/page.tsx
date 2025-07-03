@@ -9,14 +9,21 @@ import { Input } from "../../../components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Alert, AlertDescription } from "../../../components/ui/alert"
 import { Badge } from "../../../components/ui/badge"
-import { Loader2, Mail, Lock, User, Chrome, UserCheck, Vote, Shield } from "lucide-react"
+import { Loader2, Mail, Lock, User, Chrome, UserCheck, Vote, Shield, AlertCircle } from "lucide-react"
+
+interface FormData {
+  name: string
+  email: string
+  password: string
+  role: "user" | "candidate" | ""
+}
 
 export default function SignUp() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
-    role: "" as "user" | "candidate" | "",
+    role: "",
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -54,6 +61,7 @@ export default function SignUp() {
         throw new Error(data.error || "Registration failed")
       }
 
+      // Auto sign in after successful registration
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
@@ -114,6 +122,7 @@ export default function SignUp() {
           <CardContent className="p-8">
             {error && (
               <Alert className="mb-6 border-red-200 bg-red-50">
+                <AlertCircle className="h-4 w-4" />
                 <AlertDescription className="text-red-800">{error}</AlertDescription>
               </Alert>
             )}
@@ -221,7 +230,7 @@ export default function SignUp() {
               <Button
                 type="submit"
                 className="w-full h-14 bg-green-800 hover:bg-green-900 text-white font-bold text-lg rounded-lg shadow-lg transition-all duration-200"
-                disabled={loading}
+                disabled={loading || !formData.name || !formData.email || !formData.password || !formData.role}
               >
                 {loading ? (
                   <>
