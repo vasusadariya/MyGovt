@@ -1,6 +1,6 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
-import { rateLimiter, getRateLimitIdentifier } from "@/lib/rate-limiter"
+import { rateLimiter, getRateLimitIdentifier } from "./lib/rate-limiter"
 
 export default withAuth(
   function middleware(req) {
@@ -56,7 +56,7 @@ export default withAuth(
           return !!token
         }
 
-        // Protect API routes
+        // Protect API routes (except auth routes)
         if (req.nextUrl.pathname.startsWith("/api/") && !req.nextUrl.pathname.startsWith("/api/auth/")) {
           return !!token
         }

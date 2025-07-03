@@ -1,10 +1,10 @@
 import NextAuth from "next-auth/next"
-import { Account } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs"
+import type { NextAuthOptions } from "next-auth"
 
 // Extend the JWT type to include custom properties
 declare module "next-auth/jwt" {
@@ -39,7 +39,7 @@ declare module "next-auth" {
 const client = new MongoClient(process.env.MONGODB_URI!)
 const clientPromise = client.connect()
 
-const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
