@@ -1,12 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
-import { MongoClient } from "mongodb"
-
+import { authOptions } from "../auth/[...nextauth]/route"
+import { connectWithRetry } from "../../../lib/mongodb"
 import { apiCache } from "../../../lib/cache"
 import { rateLimiter, getRateLimitIdentifier } from "../../../lib/rate-limiter"
-
-const client = new MongoClient(process.env.MONGODB_URI!)
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(cachedData)
     }
 
-    await client.connect()
+    const client = await connectWithRetry()
     const db = client.db("dotslash")
 
     const candidates = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
@@ -49,6 +46,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(responseData)
   } catch (error) {
     console.error("Error fetching candidates:", error)
+    
+    if (error instanceof Error && error.message.includes("connection failed")) {
+      return NextResponse.json({ 
+        error: "Database connection failed. Please try again later." 
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -67,7 +71,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 })
     }
 
-    await client.connect()
+    const client = await connectWithRetry()
     const db = client.db("dotslash")
 
     // Check if candidate already exists
@@ -100,6 +104,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error creating candidate:", error)
+    
+    if (error instanceof Error && error.message.includes("connection failed")) {
+      return NextResponse.json({ 
+        error: "Database connection failed. Please try again later." 
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

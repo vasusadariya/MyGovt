@@ -134,7 +134,11 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user, account, profile }: { user: import("next-auth").User; account: import("next-auth").Account | null; profile?: { sub?: string } }) {
+    async signIn({ user, account, profile }: { 
+      user: import("next-auth").User; 
+      account: import("next-auth").Account | null; 
+      profile?: { sub?: string } 
+    }) {
       if (account?.provider === "google") {
         try {
           const client = await clientPromise
