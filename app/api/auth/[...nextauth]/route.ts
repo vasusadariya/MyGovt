@@ -68,7 +68,7 @@ const authOptions = {
 
         try {
           await client.connect()
-          const db = client.db("voting-final")
+          const db = client.db("dotslash")
           const user = await db.collection("users").findOne({
             email: credentials.email.toLowerCase(),
           })
@@ -142,7 +142,7 @@ const authOptions = {
       if (account?.provider === "google") {
         try {
           await client.connect()
-          const db = client.db("voting-final")
+          const db = client.db("dotslash")
 
           const existingUser = await db.collection("users").findOne({
             email: user.email?.toLowerCase(),

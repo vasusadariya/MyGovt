@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
 import { MongoClient } from "mongodb"
 
 const client = new MongoClient(process.env.MONGODB_URI!)
@@ -14,7 +14,7 @@ export async function GET() {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     let query = {}
 
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     const result = await db.collection("documents").insertOne({
       ipfsHash,

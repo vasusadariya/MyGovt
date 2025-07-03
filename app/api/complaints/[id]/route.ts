@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "../../../api/auth/[...nextauth]/route"
 import { MongoClient, ObjectId } from "mongodb"
 
 const client = new MongoClient(process.env.MONGODB_URI!)
@@ -20,7 +20,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     const result = await db.collection("complaints").updateOne(
       { _id: new ObjectId(params.id) },
@@ -58,7 +58,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     const result = await db.collection("complaints").deleteOne({
       _id: new ObjectId(params.id),

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     const existingUser = await db.collection("users").findOne({
       email: email.toLowerCase(),

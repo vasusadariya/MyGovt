@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     // Check if email already exists
     const existingSubscriber = await db.collection("newsletter_subscribers").findOne({
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     const totalSubscribers = await db.collection("newsletter_subscribers").countDocuments({
       isActive: true

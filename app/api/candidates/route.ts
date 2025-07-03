@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
 import { MongoClient } from "mongodb"
 
-import { apiCache } from "@/lib/cache"
-import { rateLimiter, getRateLimitIdentifier } from "@/lib/rate-limiter"
+import { apiCache } from "../../../lib/cache"
+import { rateLimiter, getRateLimitIdentifier } from "../../../lib/rate-limiter"
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     const candidates = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
     const totalVotes = candidates.reduce((sum, candidate) => sum + (candidate.votes || 0), 0)
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     // Check if candidate already exists
     const existingCandidate = await db.collection("candidates").findOne({

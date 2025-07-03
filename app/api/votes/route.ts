@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
 import { MongoClient, ObjectId } from "mongodb"
 
 const client = new MongoClient(process.env.MONGODB_URI!)
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     // Check if user has already voted
     const existingVote = await db.collection("votes").findOne({
@@ -71,7 +71,7 @@ export async function GET() {
     }
 
     await client.connect()
-    const db = client.db("voting-final")
+    const db = client.db("dotslash")
 
     // Check if current user has voted
     const userVote = await db.collection("votes").findOne({
