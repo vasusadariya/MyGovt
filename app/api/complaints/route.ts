@@ -1,9 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
-import { MongoClient } from "mongodb"
-
-const client = new MongoClient(process.env.MONGODB_URI!)
+import { authOptions } from "../auth/[...nextauth]/route"
+import { connectWithRetry } from "../../../lib/mongodb"
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +11,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    await client.connect()
+    const client = await connectWithRetry()
     const db = client.db("dotslash")
 
     let query = {}
@@ -35,6 +33,13 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching complaints:", error)
+    
+    if (error instanceof Error && error.message.includes("connection failed")) {
+      return NextResponse.json({ 
+        error: "Database connection failed. Please try again later." 
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -53,7 +58,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 })
     }
 
-    await client.connect()
+    const client = await connectWithRetry()
     const db = client.db("dotslash")
 
     const result = await db.collection("complaints").insertOne({
@@ -76,6 +81,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error creating complaint:", error)
+    
+    if (error instanceof Error && error.message.includes("connection failed")) {
+      return NextResponse.json({ 
+        error: "Database connection failed. Please try again later." 
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
