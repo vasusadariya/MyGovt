@@ -17,7 +17,7 @@ app.listen(port, () => {
 const dbconnect = async () => {
     try {
         await mongoose.connect(
-            "mongodb+srv://sadariyavasu02:W0IblExdomTGdVDY@cluster0.kxoxrvv.mongodb.net/dotslash"
+            "mongodb+srv://sadariyavasu02:W0IblExdomTGdVDY@cluster0.kxoxrvv.mongodb.net/dotslash?retryWrites=true&w=majority&appName=Cluster0"
         );
         console.log("Database is connected successfully!");
     } catch (e) {

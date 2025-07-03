@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-roboto-flex)", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -57,4 +57,3 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 }
-

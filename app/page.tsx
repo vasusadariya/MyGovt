@@ -117,7 +117,7 @@ const benefits = [
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false)
   const [currentStat, setCurrentStat] = useState(0)
-
+  console.log(currentStat);
   useEffect(() => {
     setMounted(true)
     const interval = setInterval(() => {
@@ -178,7 +178,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
               >
-                Revolutionizing citizen-government interaction through secure, transparent, and intelligent digital solutions powered by blockchain and AI.
+                Revolutionizing citizen-government interaction through secure, transparent, and intelligent digital solutions powered by blockchain.
               </motion.p>
 
               <motion.div
@@ -408,7 +408,7 @@ export default function LandingPage() {
                   Why Choose <span className="text-blue-600">MyGovt?</span>
                 </h2>
                 <p className="text-xl text-gray-600 leading-relaxed">
-                  We're revolutionizing how citizens interact with government services through cutting-edge technology and user-centric design.
+                  We&apos;re revolutionizing how citizens interact with government services through cutting-edge technology and user-centric design.
                 </p>
               </div>
 

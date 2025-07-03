@@ -1,9 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
-import { MongoClient, ObjectId } from "mongodb"
-
-const client = new MongoClient(process.env.MONGODB_URI!)
+import { authOptions } from "../../../lib/auth"
+import { connectWithRetry } from "../../../lib/mongodb"
+import { ObjectId } from "mongodb"
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Candidate ID is required" }, { status: 400 })
     }
 
-    await client.connect()
+    const client = await connectWithRetry()
     const db = client.db("dotslash")
 
     // Check if user has already voted
@@ -50,7 +49,10 @@ export async function POST(request: NextRequest) {
     })
 
     // Increment candidate vote count
-    await db.collection("candidates").updateOne({ _id: new ObjectId(candidateId) }, { $inc: { votes: 1 } })
+    await db.collection("candidates").updateOne(
+      { _id: new ObjectId(candidateId) }, 
+      { $inc: { votes: 1 } }
+    )
 
     return NextResponse.json({
       success: true,
@@ -58,6 +60,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error recording vote:", error)
+    
+    if (error instanceof Error && error.message.includes("connection failed")) {
+      return NextResponse.json({ 
+        error: "Database connection failed. Please try again later." 
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -70,7 +79,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    await client.connect()
+    const client = await connectWithRetry()
     const db = client.db("dotslash")
 
     // Check if current user has voted
@@ -115,6 +124,13 @@ export async function GET() {
     })
   } catch (error) {
     console.error("Error fetching vote data:", error)
+    
+    if (error instanceof Error && error.message.includes("connection failed")) {
+      return NextResponse.json({ 
+        error: "Database connection failed. Please try again later." 
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

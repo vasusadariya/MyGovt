@@ -185,39 +185,6 @@ export default function File() {
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Upload Success!</h2>
           </div>
         )}
-
-        {/* Retrieve Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-          <button 
-            onClick={retrieveHashFromBlockchain}
-            disabled={isLoading}
-            className={`w-full py-3 px-4 rounded-xl font-medium text-white 
-              ${isLoading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'} 
-              transition-colors duration-300 flex items-center justify-center space-x-2`}
-          >
-            {isLoading ? (
-              <>
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Retrieving...</span>
-              </>
-            ) : (
-              'Retrieve Stored Hash'
-            )}
-          </button>
-
-          {storedHash && (
-            <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <p className="text-sm text-gray-600 dark:text-gray-300 break-all">
-                <span className="font-medium">Stored Hash:</span> {storedHash}
-              </p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

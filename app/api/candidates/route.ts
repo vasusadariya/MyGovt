@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../../app/api/auth/[...nextauth]/route"
+import { authOptions } from "../../../lib/auth"
 import { MongoClient } from "mongodb"
 
 import { apiCache } from "../../../lib/cache"

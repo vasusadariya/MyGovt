@@ -18,7 +18,6 @@ import {
   Users,
   Globe
 } from "lucide-react"
-import { NewsletterSubscription } from "./NewsletterSubscription"
 
 const footerSections = [
   {
@@ -162,20 +161,6 @@ export function Footer() {
               </div>
             </div>
           </div>
-
-          {/* Newsletter Section */}
-          <motion.div
-            className="mt-16 pt-12 border-t border-blue-800"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-              <NewsletterSubscription variant="footer" />
-            </div>
-          </motion.div>
-
           {/* Achievements Section */}
           <motion.div
             className="mt-12 pt-8 border-t border-blue-800"

@@ -1,11 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../../api/auth/[...nextauth]/route"
+import { authOptions } from "../../../../lib/auth"
 import { MongoClient, ObjectId } from "mongodb"
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -13,11 +16,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Await the params promise
+    const { id } = await params
+
     await client.connect()
     const db = client.db("dotslash")
 
     const candidate = await db.collection("candidates").findOne({
-      _id: new ObjectId(params.id),
+      _id: new ObjectId(id),
     })
 
     if (!candidate) {
@@ -34,10 +40,15 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   } catch (error) {
     console.error("Error fetching candidate:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } finally {
+    await client.close()
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -45,13 +56,15 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Await the params promise
+    const { id } = await params
     const updates = await request.json()
 
     await client.connect()
     const db = client.db("dotslash")
 
     const result = await db.collection("candidates").updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           ...updates,
@@ -71,5 +84,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   } catch (error) {
     console.error("Error updating candidate:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } finally {
+    await client.close()
   }
 }

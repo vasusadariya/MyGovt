@@ -1,11 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../../api/auth/[...nextauth]/route"
+import { authOptions } from "../../../../lib/auth"
 import { MongoClient, ObjectId } from "mongodb"
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -13,6 +16,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Await the params promise
+    const { id } = await params
     const { status, adminNotes } = await request.json()
 
     if (!status || !["Pending", "In Progress", "Resolved", "Rejected"].includes(status)) {
@@ -23,7 +28,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const db = client.db("dotslash")
 
     const result = await db.collection("complaints").updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           status,
@@ -46,10 +51,15 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   } catch (error) {
     console.error("Error updating complaint:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } finally {
+    await client.close()
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -57,11 +67,14 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Await the params promise
+    const { id } = await params
+
     await client.connect()
     const db = client.db("dotslash")
 
     const result = await db.collection("complaints").deleteOne({
-      _id: new ObjectId(params.id),
+      _id: new ObjectId(id),
     })
 
     if (result.deletedCount === 0) {
@@ -75,5 +88,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   } catch (error) {
     console.error("Error deleting complaint:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } finally {
+    await client.close()
   }
 }

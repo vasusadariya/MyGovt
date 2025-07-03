@@ -1,4 +1,4 @@
-import File from "@/components/Document";
+import File from "../../components/Document";
 
 export default function Document() {
   return (
