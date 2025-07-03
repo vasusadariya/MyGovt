@@ -1,8 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import { MongoClient } from "mongodb"
-
-const client = new MongoClient(process.env.MONGODB_URI!)
+import clientPromise from "../../../lib/mongodb"
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 })
     }
 
-    await client.connect()
+    const client = await clientPromise
     const db = client.db("dotslash")
 
     const existingUser = await db.collection("users").findOne({
@@ -49,6 +47,16 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Signup error:", error)
+    
+    // Handle specific MongoDB connection errors
+    if (error instanceof Error) {
+      if (error.message.includes("ECONNREFUSED") || error.message.includes("querySrv")) {
+        return NextResponse.json({ 
+          error: "Database connection failed. Please check your internet connection and try again." 
+        }, { status: 503 })
+      }
+    }
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

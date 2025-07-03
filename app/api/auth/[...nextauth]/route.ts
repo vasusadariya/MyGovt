@@ -2,9 +2,9 @@ import NextAuth from "next-auth/next"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
-import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs"
 import type { NextAuthOptions } from "next-auth"
+import clientPromise from "../../../../lib/mongodb"
 
 // Extend the JWT type to include custom properties
 declare module "next-auth/jwt" {
@@ -36,9 +36,6 @@ declare module "next-auth" {
   }
 }
 
-const client = new MongoClient(process.env.MONGODB_URI!)
-const clientPromise = client.connect()
-
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
@@ -67,7 +64,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          await client.connect()
+          const client = await clientPromise
           const db = client.db("dotslash")
           const user = await db.collection("users").findOne({
             email: credentials.email.toLowerCase(),
@@ -140,7 +137,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }: { user: import("next-auth").User; account: import("next-auth").Account | null; profile?: { sub?: string } }) {
       if (account?.provider === "google") {
         try {
-          await client.connect()
+          const client = await clientPromise
           const db = client.db("dotslash")
 
           const existingUser = await db.collection("users").findOne({

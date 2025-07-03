@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../auth/[...nextauth]/route"
-import { MongoClient } from "mongodb"
-
-const client = new MongoClient(process.env.MONGODB_URI!)
+import clientPromise from "../../../lib/mongodb"
 
 export async function GET() {
   try {
@@ -13,7 +11,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    await client.connect()
+    const client = await clientPromise
     const db = client.db("dotslash")
 
     // Get comprehensive statistics
