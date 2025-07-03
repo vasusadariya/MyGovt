@@ -86,7 +86,6 @@ export default function PieChartComponent() {
     }
     return null
   }
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">

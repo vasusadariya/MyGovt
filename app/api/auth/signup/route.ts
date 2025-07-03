@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, password, role } = await request.json()
 
+    // Validation
     if (!name || !email || !password || !role) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 })
     }
@@ -21,6 +22,7 @@ export async function POST(request: NextRequest) {
     const client = await clientPromise
     const db = client.db("dotslash")
 
+    // Check if user already exists
     const existingUser = await db.collection("users").findOne({
       email: email.toLowerCase(),
     })
@@ -29,8 +31,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User already exists with this email" }, { status: 400 })
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
+    // Create user
     const result = await db.collection("users").insertOne({
       name,
       email: email.toLowerCase(),
@@ -42,6 +46,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
+      success: true,
       message: "User created successfully",
       userId: result.insertedId,
     })
@@ -56,7 +61,6 @@ export async function POST(request: NextRequest) {
         }, { status: 503 })
       }
     }
-    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../../../lib/auth"
 import clientPromise from "../../../../lib/mongodb"
 
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
