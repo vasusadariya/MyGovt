@@ -1,9 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../../../lib/auth"
-import { MongoClient, ObjectId } from "mongodb"
-
-const client = new MongoClient(process.env.MONGODB_URI!)
+import { ObjectId } from "mongodb"
+import clientPromise from "../../../../lib/mongodb" // Import the shared client promise
 
 export async function PUT(
   request: NextRequest, 
@@ -24,7 +23,8 @@ export async function PUT(
       return NextResponse.json({ error: "Invalid status" }, { status: 400 })
     }
 
-    await client.connect()
+    // Use the shared client promise
+    const client = await clientPromise
     const db = client.db("dotslash")
 
     const result = await db.collection("complaints").updateOne(
@@ -51,9 +51,8 @@ export async function PUT(
   } catch (error) {
     console.error("Error updating complaint:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
-  } finally {
-    await client.close()
   }
+  // No need to close the client when using shared connection
 }
 
 export async function DELETE(
@@ -70,7 +69,8 @@ export async function DELETE(
     // Await the params promise
     const { id } = await params
 
-    await client.connect()
+    // Use the shared client promise
+    const client = await clientPromise
     const db = client.db("dotslash")
 
     const result = await db.collection("complaints").deleteOne({
@@ -88,7 +88,6 @@ export async function DELETE(
   } catch (error) {
     console.error("Error deleting complaint:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
-  } finally {
-    await client.close()
   }
+  // No need to close the client when using shared connection
 }

@@ -38,7 +38,7 @@ function AdminDashboard() {
   const fetchAdminStats = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch("/api/admin/stats")
+      const response = await fetch("/api/admin-stats")
       if (response.ok) {
         const data = await response.json()
         setStats(data.stats)

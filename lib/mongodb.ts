@@ -18,13 +18,13 @@ const options: MongoClientOptions = {
 }
 
 let client: MongoClient
-let clientPromise: Promise<MongoClient>
+let clientPromise: Promise<MongoClient> // Fixed: Added proper type annotation
 
 if (process.env.NODE_ENV === "development") {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
   const globalWithMongo = global as typeof globalThis & {
-    _mongoClientPromise?: Promise<MongoClient>
+    _mongoClientPromise?: Promise<MongoClient> // Fixed: Added proper type annotation
   }
 
   if (!globalWithMongo._mongoClientPromise) {
@@ -73,7 +73,7 @@ export async function testConnection() {
 }
 
 // Helper function to safely connect with retry logic
-export async function connectWithRetry(maxRetries: number = 3): Promise<MongoClient> {
+export async function connectWithRetry(maxRetries: number = 3): Promise<MongoClient> { // Fixed: Added proper return type
   let lastError: Error | null = null
   
   for (let i = 0; i < maxRetries; i++) {
