@@ -51,10 +51,10 @@ const features = [
     delay: 0.3
   },
   {
-    href: "/Piechart",
+    href: "/ai-assistant",
     icon: BarChart3,
-    title: "Real-time Analytics",
-    description: "Access comprehensive data and insights about government performance and citizen engagement.",
+    title: "AI Government Assistant",
+    description: "Get intelligent insights and assistance powered by advanced AI for government services.",
     color: "from-orange-500 to-orange-600",
     delay: 0.4
   },

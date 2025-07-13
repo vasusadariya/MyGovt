@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import  { authOptions } from "../../../lib/auth"
 import { connectWithRetry } from "../../../lib/mongodb"
+import { staticDocuments, mergeWithStaticData } from "../../../lib/static-data"
 
 export async function GET() {
   try {
@@ -22,11 +23,25 @@ export async function GET() {
     }
     // Admin can see all documents
 
-    const documents = await db.collection("documents").find(query).sort({ createdAt: -1 }).toArray()
+    let documents = []
+    try {
+      documents = await db.collection("documents").find(query).sort({ createdAt: -1 }).toArray()
+    } catch (dbError) {
+      console.log("Database not available, using static data")
+      documents = []
+    }
+
+    // Merge with static data if database is empty
+    const finalDocuments = mergeWithStaticData(documents, staticDocuments)
+    
+    // Filter static data based on user role
+    const filteredDocuments = session.user.role === "user" 
+      ? finalDocuments.filter(d => d.userId === session.user.id)
+      : finalDocuments
 
     return NextResponse.json({
       success: true,
-      documents: documents.map((doc) => ({
+      documents: filteredDocuments.map((doc) => ({
         ...doc,
         _id: doc._id.toString(),
       })),
@@ -61,25 +76,32 @@ export async function POST(request: NextRequest) {
     const client = await connectWithRetry()
     const db = client.db("dotslash")
 
-    const result = await db.collection("documents").insertOne({
-      ipfsHash,
-      fileName,
-      fileType: fileType || "application/octet-stream",
-      fileSize: fileSize || 0,
-      description: description || "",
-      userId: session.user.id,
-      userEmail: session.user.email,
-      userName: session.user.name,
-      verified: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    try {
+      const result = await db.collection("documents").insertOne({
+        ipfsHash,
+        fileName,
+        fileType: fileType || "application/octet-stream",
+        fileSize: fileSize || 0,
+        description: description || "",
+        userId: session.user.id,
+        userEmail: session.user.email,
+        userName: session.user.name,
+        verified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
 
-    return NextResponse.json({
-      success: true,
-      message: "Document registered successfully",
-      documentId: result.insertedId,
-    })
+      return NextResponse.json({
+        success: true,
+        message: "Document registered successfully",
+        documentId: result.insertedId,
+      })
+    } catch (dbError) {
+      console.error("Database insertion failed:", dbError)
+      return NextResponse.json({ 
+        error: "Database temporarily unavailable. Please try again later." 
+      }, { status: 503 })
+    }
   } catch (error) {
     console.error("Error registering document:", error)
     

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../../lib/auth"
 import { connectWithRetry } from "../../../lib/mongodb"
+import { staticComplaints, mergeWithStaticData } from "../../../lib/static-data"
 
 export async function GET() {
   try {
@@ -22,11 +23,25 @@ export async function GET() {
     }
     // Admin can see all complaints
 
-    const complaints = await db.collection("complaints").find(query).sort({ createdAt: -1 }).toArray()
+    let complaints = []
+    try {
+      complaints = await db.collection("complaints").find(query).sort({ createdAt: -1 }).toArray()
+    } catch (dbError) {
+      console.log("Database not available, using static data")
+      complaints = []
+    }
+
+    // Merge with static data if database is empty
+    const finalComplaints = mergeWithStaticData(complaints, staticComplaints)
+    
+    // Filter static data based on user role
+    const filteredComplaints = session.user.role === "user" 
+      ? finalComplaints.filter(c => c.userId === session.user.id)
+      : finalComplaints
 
     return NextResponse.json({
       success: true,
-      complaints: complaints.map((complaint) => ({
+      complaints: filteredComplaints.map((complaint) => ({
         ...complaint,
         _id: complaint._id.toString(),
       })),
@@ -61,24 +76,31 @@ export async function POST(request: NextRequest) {
     const client = await connectWithRetry()
     const db = client.db("dotslash")
 
-    const result = await db.collection("complaints").insertOne({
-      complaintType,
-      area,
-      description,
-      contact,
-      name: session.user.name,
-      email: session.user.email,
-      userId: session.user.id,
-      status: "Pending",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    try {
+      const result = await db.collection("complaints").insertOne({
+        complaintType,
+        area,
+        description,
+        contact,
+        name: session.user.name,
+        email: session.user.email,
+        userId: session.user.id,
+        status: "Pending",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
 
-    return NextResponse.json({
-      success: true,
-      message: "Complaint submitted successfully",
-      complaintId: result.insertedId,
-    })
+      return NextResponse.json({
+        success: true,
+        message: "Complaint submitted successfully",
+        complaintId: result.insertedId,
+      })
+    } catch (dbError) {
+      console.error("Database insertion failed:", dbError)
+      return NextResponse.json({ 
+        error: "Database temporarily unavailable. Please try again later." 
+      }, { status: 503 })
+    }
   } catch (error) {
     console.error("Error creating complaint:", error)
     

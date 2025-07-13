@@ -131,20 +131,20 @@ function Dashboard() {
     },
     {
       component: () => (
-        <Link href="/Piechart">
-          <Card className="cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100">
+        <Link href="/ai-assistant">
+          <Card className="cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100">
             <CardContent className="p-6">
               <div className="flex items-center justify-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                   <PieChart className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-center text-slate-800 mb-2">Election Results</h3>
+              <h3 className="text-xl font-bold text-center text-slate-800 mb-2">AI Assistant</h3>
               <p className="text-slate-600 text-center text-sm mb-4">
-                View live voting analytics and results
+                Get intelligent insights and government assistance
               </p>
-              <div className="flex items-center justify-center text-green-600 font-semibold">
-                <span className="text-sm">View Results</span>
+              <div className="flex items-center justify-center text-purple-600 font-semibold">
+                <span className="text-sm">Ask AI</span>
                 <TrendingUp className="w-4 h-4 ml-2" />
               </div>
             </CardContent>

@@ -4,6 +4,7 @@ import { authOptions } from "../../../lib/auth"
 import { connectWithRetry } from "../../../lib/mongodb"
 import { apiCache } from "../../../lib/cache"
 import { rateLimiter, getRateLimitIdentifier } from "../../../lib/rate-limiter"
+import { staticCandidates, mergeWithStaticData } from "../../../lib/static-data"
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,13 +29,22 @@ export async function GET(request: NextRequest) {
     const client = await connectWithRetry()
     const db = client.db("dotslash")
 
-    const candidates = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
-    const totalVotes = candidates.reduce((sum, candidate) => sum + (candidate.votes || 0), 0)
+    let candidates = []
+    try {
+      candidates = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
+    } catch (dbError) {
+      console.log("Database not available, using static data")
+      candidates = []
+    }
+
+    // Merge with static data if database is empty
+    const finalCandidates = mergeWithStaticData(candidates, staticCandidates)
+    const totalVotes = finalCandidates.reduce((sum, candidate) => sum + (candidate.votes || 0), 0)
 
     const responseData = {
       success: true,
       totalVotes,
-      candidates: candidates.map((candidate) => ({
+      candidates: finalCandidates.map((candidate) => ({
         ...candidate,
         _id: candidate._id.toString(),
       })),
@@ -75,33 +85,46 @@ export async function POST(request: NextRequest) {
     const db = client.db("dotslash")
 
     // Check if candidate already exists
-    const existingCandidate = await db.collection("candidates").findOne({
-      $or: [{ email: session.user.email }, { votingId: Number(votingId) }],
-    })
+    let existingCandidate = null
+    try {
+      existingCandidate = await db.collection("candidates").findOne({
+        $or: [{ email: session.user.email }, { votingId: Number(votingId) }],
+      })
+    } catch (dbError) {
+      console.log("Database check failed, proceeding with creation")
+    }
 
     if (existingCandidate) {
       return NextResponse.json({ error: "Candidate already registered" }, { status: 400 })
     }
 
-    const result = await db.collection("candidates").insertOne({
-      name,
-      gender,
-      age: Number(age),
-      promises,
-      party,
-      votingId: Number(votingId),
-      votes: 0,
-      email: session.user.email,
-      userId: session.user.id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    try {
+      const result = await db.collection("candidates").insertOne({
+        name,
+        gender,
+        age: Number(age),
+        promises,
+        party,
+        votingId: Number(votingId),
+        votes: 0,
+        email: session.user.email,
+        userId: session.user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
 
-    return NextResponse.json({
-      success: true,
-      message: "Candidate registered successfully",
-      candidateId: result.insertedId,
-    })
+      return NextResponse.json({
+        success: true,
+        message: "Candidate registered successfully",
+        candidateId: result.insertedId,
+      })
+    } catch (dbError) {
+      console.error("Database insertion failed:", dbError)
+      return NextResponse.json({ 
+        error: "Database temporarily unavailable. Please try again later." 
+      }, { status: 503 })
+    }
+
   } catch (error) {
     console.error("Error creating candidate:", error)
     

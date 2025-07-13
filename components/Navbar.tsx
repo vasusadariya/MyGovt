@@ -20,6 +20,8 @@ import { Badge } from "../components/ui/badge"
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Services", href: "/#features" },
+  { name: "AI Assistant", href: "/ai-assistant" },
+  { name: "Complaints", href: "/complaints" },
   { name: "Elections", href: "/dashboard/users/elections" },
   { name: "Documents", href: "/document" },
 ]
