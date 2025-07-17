@@ -56,6 +56,7 @@ export async function GET() {
         totalDocuments,
       }
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database not available, using static data for stats")
       
       // Use static data for statistics
@@ -80,6 +81,7 @@ export async function GET() {
       recentVotes = await db.collection("votes").find({}).sort({ votedAt: -1 }).limit(5).toArray()
       candidateVotes = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database activity fetch failed, using static data")
       
       recentComplaints = staticComplaints

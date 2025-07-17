@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
     try {
       candidates = await db.collection("candidates").find({}).sort({ votes: -1 }).toArray()
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database not available, using static data")
       candidates = []
     }
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
         $or: [{ email: session.user.email }, { votingId: Number(votingId) }],
       })
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database check failed, proceeding with creation")
     }
 
