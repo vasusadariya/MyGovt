@@ -35,7 +35,7 @@ interface Message {
 interface AIInsight {
   title: string
   description: string
-  icon: React.ComponentType<any>
+  icon: React.ComponentType<{ className?: string }>
   color: string
   action: string
 }

@@ -27,6 +27,7 @@ export async function GET() {
     try {
       complaints = await db.collection("complaints").find(query).sort({ createdAt: -1 }).toArray()
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database not available, using static data")
       complaints = []
     }

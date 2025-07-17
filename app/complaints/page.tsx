@@ -8,8 +8,7 @@ import { Badge } from "../../components/ui/badge"
 import { Alert, AlertDescription } from "../../components/ui/alert"
 import { 
   MessageSquare, 
-  Plus, 
-  Filter, 
+  Plus,
   Search, 
   Clock, 
   CheckCircle, 
@@ -455,7 +454,7 @@ export default function ComplaintsPage() {
             <AlertTriangle className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800">
               <strong>Need Help?</strong> For urgent issues, please call our emergency hotline at <strong>+1-800-GOV-HELP</strong>. 
-              For general inquiries, submit a complaint above and we'll respond within 24-48 hours.
+              For general inquiries, submit a complaint above and we&apos;ll respond within 24-48 hours.
             </AlertDescription>
           </Alert>
         </motion.div>

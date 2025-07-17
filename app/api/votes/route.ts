@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
         existingVote = staticVotes.find(vote => vote.userId === session.user.id)
       }
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database check failed, checking static data only")
       existingVote = staticVotes.find(vote => vote.userId === session.user.id)
     }
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
         _id: new ObjectId(candidateId),
       })
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database candidate check failed")
     }
 
@@ -118,6 +120,7 @@ export async function GET() {
         userVote = staticVotes.find(vote => vote.userId === session.user.id)
       }
     } catch (dbError) {
+      console.error(dbError);
       console.log("Database check failed, checking static data only")
       userVote = staticVotes.find(vote => vote.userId === session.user.id)
     }
@@ -143,6 +146,7 @@ export async function GET() {
           ])
           .toArray()
       } catch (dbError) {
+        console.error(dbError);
         console.log("Database stats failed, using static data")
         totalVotes = staticVotes.length
         
@@ -157,7 +161,7 @@ export async function GET() {
           }
           acc[vote.candidateId].count++
           return acc
-        }, {} as Record<string, any>)
+        }, {} as Record<string, { _id: string; count: number; candidateName: string }>)
         
         votesByCandidate = Object.values(groupedVotes)
       }
