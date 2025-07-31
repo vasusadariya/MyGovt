@@ -66,8 +66,8 @@ export async function POST(request: Request) {
     await new Promise(resolve => setTimeout(resolve, 1500))
 
     let response = ""
-    let confidence = 0.89
-    let sources = ["Government Database", "Citizen Feedback", "Election Data", "Complaint Analytics"]
+    const confidence = 0.89
+    const sources = ["Government Database", "Citizen Feedback", "Election Data", "Complaint Analytics"]
     
     if (openai) {
       try {

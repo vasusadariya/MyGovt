@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Navbar } from "../../components/Navbar"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 import { Button } from "../../components/ui/button"
@@ -55,26 +55,7 @@ export default function ComplaintsPage() {
     fetchComplaints()
   }, [])
 
-  useEffect(() => {
-    filterComplaints()
-  }, [complaints, searchTerm, statusFilter, typeFilter])
-
-  const fetchComplaints = async () => {
-    try {
-      setIsLoading(true)
-      const response = await fetch("/api/complaints")
-      if (response.ok) {
-        const data = await response.json()
-        setComplaints(data.complaints || [])
-      }
-    } catch (error) {
-      console.error("Error fetching complaints:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const filterComplaints = () => {
+  const filterComplaints = useCallback(() => {
     let filtered = complaints
 
     if (searchTerm) {
@@ -94,6 +75,25 @@ export default function ComplaintsPage() {
     }
 
     setFilteredComplaints(filtered)
+  }, [complaints, searchTerm, statusFilter, typeFilter])
+
+  useEffect(() => {
+    filterComplaints()
+  }, [filterComplaints])
+
+  const fetchComplaints = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch("/api/complaints")
+      if (response.ok) {
+        const data = await response.json()
+        setComplaints(data.complaints || [])
+      }
+    } catch (error) {
+      console.error("Error fetching complaints:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const getStatusColor = (status: string) => {
